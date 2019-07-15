@@ -23,5 +23,5 @@ docker build \
     .
 
 if [ "$workspace" == "master" ] || [ "$workspace" == "prod" ]; then
-  docker push radaisystems/nginx-dynamic-acm::$tag
+  docker push radaisystems/nginx-dynamic-acm:$tag
 fi
