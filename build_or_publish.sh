@@ -13,7 +13,7 @@ else
 fi
 
 echo "pulling previous image for layer cache... "
-$(docker login -u "$DOCKERHUB_USERNAME" --password "$DOCKERHUB_PASSWORD") &>/dev/null || echo 'warning: docker hub login failed'
+$(docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS") &>/dev/null || echo 'warning: docker hub login failed'
 docker pull radaisystems/nginx-dynamic-acm:latest &>/dev/null || echo 'warning: pull failed'
 
 echo "building image... "
