@@ -8,7 +8,7 @@ The nginx configuration generated will look like:
 ```server {
   listen       *:443 ssl;
 
-  server_name  $ENV{"FQDN"} $ENV{"ENDPOINT_NAME"}.$ENV{"DOMAIN_NAME"}
+  server_name  $ENV{"FQDN"} $ENV{"SERVER_NAME"}
 
   ssl on;
   ssl_certificate           /etc/ssl/certs/$ENV{"FQDN"}.crt;
@@ -28,7 +28,7 @@ The nginx configuration generated will look like:
 
 
   location / {
-    proxy_pass            http://$ENV{"ENDPOINT_NAME"}:8080$ENV{"ROOT_URL_PATH"};
+    proxy_pass            http://$ENV{"HTTP_PROXY_PATH"};
     proxy_read_timeout    90s;
     proxy_connect_timeout 90s;
     proxy_send_timeout    90s;
@@ -43,7 +43,7 @@ The nginx configuration generated will look like:
 server {
   listen *:80;
 
-  server_name           $ENV{"FQDN"} $ENV{"ENDPOINT_NAME"}.$ENV{"DOMAIN_NAME"}
+  server_name           $ENV{"FQDN"} $ENV{"SERVER_NAME"}
 
 
   index  index.html index.htm index.php;
