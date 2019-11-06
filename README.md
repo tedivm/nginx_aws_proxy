@@ -28,7 +28,7 @@ The nginx configuration generated will look like:
 
 
   location / {
-    proxy_pass            http://$ENV{"HTTP_PROXY_PATH"};
+    proxy_pass            $ENV{"HTTP_PROXY_URL"};
     proxy_read_timeout    90s;
     proxy_connect_timeout 90s;
     proxy_send_timeout    90s;
