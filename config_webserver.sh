@@ -87,11 +87,6 @@ function ReplaceEnvironmentVariable() {
         sed -i "s|\\\$ENV{\"$1\"}|$2|g"
 }
 
-
-if [ -z "$HOST" ]; then
-    export HOST="$host"
-fi
-
 if [ -n "$DEBUG" ]; then
     echo "Environment variables:"
     env
