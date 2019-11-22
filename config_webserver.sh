@@ -93,6 +93,10 @@ if [ -n "$DEBUG" ]; then
     echo "..."
 fi
 
+if [ -z "$" ]; then
+    export SENTRY_AUTH_STRING=""
+fi
+
 # Replace all variables
 for _curVar in `env | awk -F = '{print $1}'`;do
     # awk has split them by the equals sign
