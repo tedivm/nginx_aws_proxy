@@ -93,7 +93,7 @@ if [ -n "$DEBUG" ]; then
     echo "..."
 fi
 
-if [ -z "$" ]; then
+if [ -z "$SENTRY_AUTH_STRING" ]; then
     export SENTRY_AUTH_STRING=""
 fi
 
