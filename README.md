@@ -1,61 +1,25 @@
-Enables nginx with SSL certificates pulled from AWS ACM to be used as a sidecar for other containers or `endpoints`.
+# NGINX Private ACM Proxy
 
-# Environmental Variables
-Enables use of environmental variables in nginx configuration. Upon start, will pull from environment `FQDN`, `ENDPOINT_NAME`, and `DOMAIN_NAME`, which construct the server_name. `ROOT_URL_PATH` needs to be set, and can be set as an empty string.
+This is a simple NGINX Proxy that pulls down keys from the AWS ACM.
 
-The nginx configuration generated will look like:
+## Environmental Variables
 
-```server {
-  listen       *:443 ssl;
+* `FQDN` - the fully qualified domain to use.
+* `HTTP_PROXY_URL` - the URL you're pointing the proxy at.
 
-  server_name  $ENV{"FQDN"} $ENV{"SERVER_NAME"}
+That's it! From there the container downloads the certificate from the AWS ACM Private CA, configures the private key, certificate chain, and passphrase files, before launching nginx.
 
-  ssl on;
-  ssl_certificate           /etc/ssl/certs/$ENV{"FQDN"}.crt;
-  ssl_certificate_key       /etc/ssl/private/$ENV{"FQDN"}.key;
-  ssl_session_cache         shared:SSL:10m;
-  ssl_session_timeout       5m;
-  ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
-  ssl_ciphers               ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS;
-  ssl_prefer_server_ciphers on;
+There are some additional environmental variables you can set-
 
-  index  index.html;
+* `PRIVATE_CA_NAME` and `PRIVATE_CA_URL` allow you to install a private CA on the server, which is useful if you're trying to proxy to another server running HTTPS. Ultimately though you should probably bake in the certificates another image if you go this route.
 
-  access_log            /var/log/nginx/ssl-$ENV{"FQDN"}.access.log combined;
-  error_log             /var/log/nginx/ssl-$ENV{"FQDN"}.error.log;
+* `DEBUG` - when set to "true" logging will be turned up and environmental variables will be printed on launch.
 
-  underscores_in_headers on;
+## Changing the nginx default configuration
 
+The `default.conf` we use is different than the one shipped by nginx in two ways-
 
-  location / {
-    proxy_pass            $ENV{"HTTP_PROXY_URL"};
-    proxy_read_timeout    90s;
-    proxy_connect_timeout 90s;
-    proxy_send_timeout    90s;
-    proxy_redirect        http:// $scheme://;
-    proxy_set_header      Host $host;
-    proxy_set_header      X-Real-IP $remote_addr;
-    proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header      Proxy "";
-  }
-}
+* It includes all the SSL and Proxy settings needed to do its job.
+* It uses embedded tokens that get replaced on launch.
 
-server {
-  listen *:80;
-
-  server_name           $ENV{"FQDN"} $ENV{"SERVER_NAME"}
-
-
-  index  index.html index.htm index.php;
-  access_log            /var/log/nginx/ssl-$ENV{"FQDN"}.access.log combined;
-  error_log             /var/log/nginx/ssl-$ENV{"FQDN"}.error.log;
-
-  location / {
-    index     index.html index.htm index.php;
-    rewrite ^ https://$server_name$request_uri? permanent;
-  }
-}
-```
-
-# Retrieval of certificate
-When the container starts, the ACM certificate named with the environmental variable `FQDN` will be pulled. The pull depends on the container having access to a secret named `FQDN` that has been used to decrypt the ACM certificate.
+So if you want to change this file you should start with the one in this project (in conf/default.conf) and when you put it into the container you should place it at `/default.conf`- the launch script will find it, inject the appropriate settings in, and then move it to `/etc/nginx/conf.d/default.conf` for you. If you try to alter `/etc/nginx/conf.d/default.conf` directly it will get overwritten.

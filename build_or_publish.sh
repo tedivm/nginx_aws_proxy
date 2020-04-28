@@ -18,7 +18,7 @@ docker pull radaisystems/nginx-dynamic-acm:latest &>/dev/null || echo 'warning: 
 echo "building image... "
 docker build \
     --cache-from radaisystems/nginx-dynamic-acm:latest \
-    -f Dockerfile.nginx \
+    -f dockerfile \
     -t radaisystems/nginx-dynamic-acm:$tag \
     .
 
