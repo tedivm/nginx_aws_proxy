@@ -17,11 +17,15 @@ docker pull radaisystems/nginx-dynamic-acm:latest &>/dev/null || echo 'warning: 
 
 echo "building image... "
 docker build \
-    --cache-from radaisystems/nginx-dynamic-acm:latest \
-    -f Dockerfile.nginx \
+    -f dockerfile \
     -t radaisystems/nginx-dynamic-acm:$tag \
+    -t radaisystems/nginx-dynamic-acm:v1 \
     .
 
 if [ "$workspace" == "master" ] || [ "$workspace" == "prod" ]; then
   docker push radaisystems/nginx-dynamic-acm:$tag
+fi
+
+if [ "$workspace" == "prod" ]; then
+  docker push radaisystems/nginx-dynamic-acm:v1
 fi
