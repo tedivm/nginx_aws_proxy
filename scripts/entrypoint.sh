@@ -71,5 +71,10 @@ function certificate_expiration_check() {
 sleep 4 && certificate_expiration_check &
 
 # Run nginx
-echo 'Starting nginx'
-nginx -g "daemon off;"
+if [ "$DEBUG" == "true" ]; then
+  echo 'Starting nginx-debug with extended logging'
+  nginx-debug -g "daemon off;"
+else
+  echo 'Starting nginx'
+  nginx -g "daemon off;"
+fi
