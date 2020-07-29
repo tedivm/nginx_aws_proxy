@@ -7,7 +7,7 @@ workspace=$1
 if [ "$workspace" == "master" ]; then
     tag="latest"
 elif [ "$workspace" == "prod" ]; then
-    tag="stable"
+    tag="v1"
 else
     tag="$workspace"
 fi
@@ -19,13 +19,8 @@ echo "building image... "
 docker build \
     -f dockerfile \
     -t radaisystems/nginx-dynamic-acm:$tag \
-    -t radaisystems/nginx-dynamic-acm:v1 \
     .
 
 if [ "$workspace" == "master" ] || [ "$workspace" == "prod" ]; then
   docker push radaisystems/nginx-dynamic-acm:$tag
-fi
-
-if [ "$workspace" == "prod" ]; then
-  docker push radaisystems/nginx-dynamic-acm:v1
 fi
