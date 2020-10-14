@@ -1,5 +1,8 @@
 FROM nginx
 
+ENV NX_PROXY_BUFFER_NUMBER=16
+ENV NX_PROXY_BUFFER_SIZE=4k
+
 # All this just for the awscli
 RUN apt-get update && \
     apt-get install -y \

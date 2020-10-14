@@ -13,6 +13,14 @@ if [[ -z "$HTTP_PROXY_URL" ]]; then
   echo "HTTP_PROXY_URL environmental variable is required"
   exit 1
 fi
+if [[ -z "$NX_PROXY_BUFFER_NUMBER" ]]; then
+  echo "NX_PROXY_BUFFER_NUMBER environmental variable is required (nginx proxy_buffers setting)"
+  exit 1
+fi
+if [[ -z "$NX_PROXY_BUFFER_SIZE" ]]; then
+  echo "NX_PROXY_BUFFER_SIZE environmental variable is required (nginx proxy_buffers setting)"
+  exit 1
+fi
 
 # SERVER_NAME should be optional but needs to be a string, even if empty.
 if [[ -z "$SERVER_NAME" ]]; then
