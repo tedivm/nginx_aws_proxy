@@ -11,8 +11,6 @@ services:
       - "FQDN=ctcandidate.io-dev.radai"
       - "HTTP_PROXY_URL=http://webserver/"
       - "DEBUG=true"
-      - "NX_PROXY_BUFFER_NUMBER=16"
-      - "NX_PROXY_BUFFER_SIZE=4k"
       #- "SELF_SIGNED=true"
 
   webserver:
