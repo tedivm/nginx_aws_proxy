@@ -2,6 +2,7 @@ FROM nginx
 
 ENV NX_PROXY_BUFFER_NUMBER=16
 ENV NX_PROXY_BUFFER_SIZE=4k
+ENV PROXY_HEADER_HOST=\$host
 
 # All this just for the awscli
 RUN apt-get update && \
