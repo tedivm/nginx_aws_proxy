@@ -1,4 +1,5 @@
-FROM nginx
+ARG NGINX_VERSION=latest
+FROM nginx:$NGINX_VERSION
 
 ENV NX_PROXY_BUFFER_NUMBER=16
 ENV NX_PROXY_BUFFER_SIZE=4k
@@ -7,11 +8,11 @@ ENV PROXY_HEADER_HOST=\$host
 # All this just for the awscli
 RUN apt-get update && \
     apt-get install -y \
-        python3 \
-        python3-pip \
-        python3-setuptools \
-        curl \
-        jq \
+    python3 \
+    python3-pip \
+    python3-setuptools \
+    curl \
+    jq \
     && python3 -m pip --no-cache-dir install --upgrade pip \
     && python3 -m pip --no-cache-dir install --upgrade awscli \
     && apt-get clean

@@ -1,0 +1,47 @@
+name: AWS ECR Push
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        version: ["1.23", "latest", "stable"]
+
+    name: Build Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/tedivm/nginx_aws_proxy
+          tags: |
+            type=ref,event=branch
+            type=raw,value=${{ matrix.version }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NGINX_VERSION=${{ matrix.version }}
