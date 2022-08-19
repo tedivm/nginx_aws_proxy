@@ -1,4 +1,4 @@
-name: AWS ECR Push
+name: Image Builder
 
 on:
   push:
