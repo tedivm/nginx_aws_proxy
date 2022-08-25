@@ -38,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/${{ github.actor }}/nginx_aws_proxy
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=ref,event=branch
             type=raw,value=${{ matrix.version }}
