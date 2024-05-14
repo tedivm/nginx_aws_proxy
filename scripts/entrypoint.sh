@@ -28,12 +28,19 @@ if [[ -z "$SERVER_NAME" ]]; then
   export SERVER_NAME
 fi
 
-if [ -n "$DEBUG" ]; then
-    echo "Environment variables:"
-    env
-    echo ""
+if [[ -z "$KEYFILE" ]]; then
+  KEYFILE="nginx_aws_proxy"
+  export KEYFILE
 fi
 
+SHORT_FQDN=$(echo $FQDN | cut -d" " -f1)
+export SHORT_FQDN
+
+if [ -n "$DEBUG" ]; then
+  echo "Environment variables:"
+  env
+  echo ""
+fi
 
 #
 # Configure SSL
@@ -47,27 +54,24 @@ else
   /opt/scripts/acm_certificate.sh
 fi
 
-
 #
 # NGINX
 #
 
-
 # Replace variables $ENV{<environment varname>}
 function ReplaceEnvironmentVariable() {
-    grep -rl "\$ENV{\"$1\"}" $3|xargs -r \
-        sed -i "s|\\\$ENV{\"$1\"}|$2|g"
+  grep -rl "\$ENV{\"$1\"}" $3 | xargs -r \
+    sed -i "s|\\\$ENV{\"$1\"}|$2|g"
 }
-
 
 # Restore "template" configuration for modification below
 cp /default.conf /etc/nginx/conf.d/default.conf
 
 # Replace all variables
-for _curVar in `env | awk -F = '{print $1}'`;do
-    # awk has split them by the equals sign
-    # Pass the name and value to our function
-    ReplaceEnvironmentVariable "${_curVar}" "${!_curVar}" /etc/nginx/conf.d/*
+for _curVar in $(env | awk -F = '{print $1}'); do
+  # awk has split them by the equals sign
+  # Pass the name and value to our function
+  ReplaceEnvironmentVariable "${_curVar}" "${!_curVar}" /etc/nginx/conf.d/*
 done
 
 function certificate_expiration_check() {
