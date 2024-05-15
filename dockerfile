@@ -13,8 +13,8 @@ RUN apt-get update && \
     python3-setuptools \
     curl \
     jq \
-    && python3 -m pip --no-cache-dir install --upgrade pip \
-    && python3 -m pip --no-cache-dir install --upgrade awscli \
+    && python3 -m pip --no-cache-dir install --break-system-packages --upgrade pip \
+    && python3 -m pip --no-cache-dir install --break-system-packages --upgrade awscli \
     && apt-get clean
 
 
